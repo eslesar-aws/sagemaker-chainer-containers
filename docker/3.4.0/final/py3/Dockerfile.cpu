@@ -8,11 +8,11 @@ RUN pip3 install --no-cache \
      Pillow==5.0.0 matplotlib==2.2.0
 
 # Edit matplotlibrc to use "Agg" backend by default to write plots to file.
-RUN sed -i s/TkAgg/Agg/ /usr/local/lib/python2.7/dist-packages/matplotlib/mpl-data/matplotlibrc
+RUN sed -i s/TkAgg/Agg/ /usr/local/lib/python3.5/dist-packages/matplotlib/mpl-data/matplotlibrc
 
-COPY sagemaker-container-support/dist/sagemaker_container_support-1.0-py3-none-any.whl /sagemaker_container_support-1.0-py3-none-any.whl
+COPY sagemaker-container-support/dist/sagemaker_container_support-1.0-py2.py3-none-any.whl /sagemaker_container_support-1.0-py2.py3-none-any.whl
 COPY dist/sagemaker_chainer_container-1.0-py2.py3-none-any.whl /sagemaker_chainer_container-1.0-py2.py3-none-any.whl
 
-RUN pip install /sagemaker_container_support-1.0-py2-none-any.whl && pip install /sagemaker_chainer_container-1.0-py2.py3-none-any.whl
+RUN pip3 install /sagemaker_container_support-1.0-py2.py3-none-any.whl && pip3 install /sagemaker_chainer_container-1.0-py2.py3-none-any.whl
 
-ENTRYPOINT ["/usr/bin/python3", "-m", "chainer_framework.start"]
+ENTRYPOINT ["/usr/bin/python2", "-m", "chainer_framework.start"]
