@@ -503,7 +503,8 @@ def default_bucket(boto_session):
     """
     s3 = boto_session.resource('s3')
     account = boto_session.client('sts').get_caller_identity()['Account']
-    region = boto_session.region_name
+    # TODO: make region configurable
+    region = boto_session.region_name or 'us-west-2'
     bucket = 'sagemaker-{}-{}'.format(region, account)
 
     if not bucket_exists(boto_session, bucket):
