@@ -11,7 +11,8 @@ RUN apt-get update && \
 # install pip
 RUN cd /tmp && \
      curl -O https://bootstrap.pypa.io/get-pip.py && \
-     python2 get-pip.py
+     python2 get-pip.py && \
+     python3 get-pip.py
 
 # CUDA-aware OpenMPI:
 # 2.1.2 is recommended by Chainer people.
@@ -61,4 +62,5 @@ RUN mkdir -p /root/.openmpi
 COPY mpi_script.sh /mpi_script.sh
 RUN chmod +x /mpi_script.sh
 
-
+# Edit matplotlibrc to use "Agg" backend by default to write plots to file.
+RUN sed -i s/TkAgg/Agg/ /etc/matplotlibrc

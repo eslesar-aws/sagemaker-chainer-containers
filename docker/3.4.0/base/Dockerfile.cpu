@@ -10,7 +10,8 @@ RUN apt-get update && \
 
 RUN cd /tmp && \
      curl -O https://bootstrap.pypa.io/get-pip.py && \
-     python2 get-pip.py
+     python2 get-pip.py && \
+     python3 get-pip.py
 
 # https://stackoverflow.com/questions/29274638/opencv-libdc1394-error-failed-to-initialize-libdc1394
 RUN ln -s /dev/null /dev/raw1394
