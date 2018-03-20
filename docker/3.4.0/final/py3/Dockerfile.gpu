@@ -14,4 +14,6 @@ COPY dist/sagemaker_chainer_container-1.0-py2.py3-none-any.whl /sagemaker_chaine
 
 RUN pip3 install /sagemaker_container_support-1.0-py2.py3-none-any.whl && pip3 install /sagemaker_chainer_container-1.0-py2.py3-none-any.whl
 
-ENTRYPOINT ["/usr/bin/python2", "-m", "chainer_framework.start"]
+RUN alias python=python3
+
+ENTRYPOINT ["python", "-m", "chainer_framework.start"]
