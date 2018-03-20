@@ -19,6 +19,7 @@ logging.getLogger('connectionpool.py').setLevel(logging.INFO)
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
+FRAMEWORK_NAME='chainer'
 
 def pytest_addoption(parser):
     parser.addoption('--build-image', '-D', action="store_true")
@@ -100,11 +101,10 @@ def install_container_support(request):
 @pytest.fixture(scope='session', autouse=True)
 def build_base_image(request, framework_version, processor, base_image_tag):
     build_base_image = request.config.getoption('--build-base-image')
-    print('dir path:' *100)
-    print(dir_path)
     if build_base_image:
-        return local_mode.build_base_image(framework_version=framework_version,
-                                           tag=base_image_tag,
+        return local_mode.build_base_image(framework_name=FRAMEWORK_NAME,
+                                           framework_version=framework_version,
+                                           base_image_tag=base_image_tag,
                                            processor=processor,
                                            cwd=join(dir_path, '..'))
 
@@ -115,7 +115,8 @@ def build_base_image(request, framework_version, processor, base_image_tag):
 def build_image(request, py_version, framework_version, processor, tag):
     build_image = request.config.getoption('--build-image')
     if build_image:
-        return local_mode.build_image(py_version=py_version,
+        return local_mode.build_image(framework_name=FRAMEWORK_NAME,
+                                      py_version=py_version,
                                       framework_version=framework_version,
                                       processor=processor,
                                       tag=tag,

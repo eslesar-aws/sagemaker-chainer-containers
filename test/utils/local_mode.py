@@ -41,39 +41,39 @@ DEFAULT_HOSTING_ENV = [
     'SAGEMAKER_REGION={}'.format(SAGEMAKER_REGION)
 ]
 
-def build_base_image(framework_name, framework_version, processor, cwd='.'):
+def build_base_image(framework_name, framework_version, processor, base_image_tag, cwd='.'):
 
-    image_tag = get_base_image_tag(framework_name, framework_version, processor)
+    base_image_uri = get_base_image_uri(framework_name, base_image_tag)
 
     dockerfile_location = os.path.join('docker', framework_version, 'base', 'Dockerfile.{}'.format(processor))
 
     build_directory = os.path.dirname(dockerfile_location)
 
-    subprocess.check_call(['docker', 'build', '-t', image_tag, '-f', dockerfile_location, build_directory], cwd=cwd)
-    print('created image {}'.format(image_tag))
-    return image_tag
+    subprocess.check_call(['docker', 'build', '-t', base_image_uri, '-f', dockerfile_location, build_directory], cwd=cwd)
+    print('created image {}'.format(base_image_uri))
+    return base_image_uri
 
 
-def build_image(py_version, framework_name, framework_version, processor, cwd='.'):
+def build_image(py_version, framework_name, framework_version, processor, tag, cwd='.'):
     check_call('python setup.py bdist_wheel')
     check_call('python setup.py bdist_wheel', cwd='sagemaker-container-support')
 
-    image_tag = get_image_tag(framework_name, framework_version, py_version, processor)
+    image_uri = get_image_uri(framework_name, tag)
 
     dockerfile_location = os.path.join('docker', framework_version, 'final', py_version,
                                        'Dockerfile.{}'.format(processor))
 
-    subprocess.check_call(['docker', 'build', '-t', image_tag, '-f', dockerfile_location, '.'], cwd=cwd)
-    print('created image {}'.format(image_tag))
-    return image_tag
+    subprocess.check_call(['docker', 'build', '-t', image_uri, '-f', dockerfile_location, '.'], cwd=cwd)
+    print('created image {}'.format(image_uri))
+    return image_uri
 
 
-def get_base_image_tag(framework_name, framework_version, processor):
-    return '{}-base:{}-{}'.format(framework_name, framework_version, processor)
+def get_base_image_uri(framework_name, base_image_tag):
+    return '{}-base:{}'.format(framework_name, base_image_tag)
 
 
-def get_image_tag(framework_name, framework_version, py_version, processor):
-    return '{}:{}-{}-{}'.format(framework_name, framework_version, processor, py_version)
+def get_image_uri(framework_name, tag):
+    return '{}:{}'.format(framework_name, tag)
 
 
 def create_config_files(program, s3_source_archive, path, additional_hp={}):
