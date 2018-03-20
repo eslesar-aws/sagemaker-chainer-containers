@@ -34,5 +34,8 @@ setup(
     ],
 
     install_requires=['numpy', 'sagemaker-container-support', 'boto3>=1.4.8', 'PyYAML', 'sagemaker', 'pytest', 'mock',
-                      'flask', 'requests', 'chainer']
+                      'flask', 'requests', 'chainer'],
+    extras_require={
+        'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock', 'Flask', 'boto3', 'docker-compose']
+    }
 )
