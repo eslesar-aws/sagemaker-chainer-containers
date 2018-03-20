@@ -6,6 +6,9 @@ RUN pip2 install --no-cache \
      filelock==3.0.4 protobuf==3.5.1 Pillow==5.0.0 cupy-cuda90==3.4.0 \
      chainer==3.4.0 chainermn==1.2.0 chainercv==0.8.0
 
+# Edit matplotlibrc to use "Agg" backend by default to write plots to file.
+RUN sed -i s/TkAgg/Agg/ /etc/matplotlibrc
+
 COPY sagemaker-container-support/dist/sagemaker_container_support-1.0-py2-none-any.whl /sagemaker_container_support-1.0-py2-none-any.whl
 COPY dist/sagemaker_chainer_container-1.0-py2.py3-none-any.whl /sagemaker_chainer_container-1.0-py2.py3-none-any.whl
 
