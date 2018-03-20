@@ -337,10 +337,7 @@ def create_docker_services(command, tmpdir, hosts, image, additional_volumes, ad
     else:
         raise ValueError('Unexpected command: {}'.format(command))
 
-    # FIXME: if this runs on TeamCity, it overrides instance profile credentials
-    if os.path.isfile(os.path.join(os.path.expanduser("~"), '.aws', 'credentials')):
-        # ~/.aws/credentials exists: probably running locally.
-        environment.extend(credentials_to_env(session))
+    environment.extend(credentials_to_env(session))
 
     environment.extend(additional_env_vars)
 
@@ -410,11 +407,16 @@ def credentials_to_env(session):
         creds = session.get_credentials()
         access_key = creds.access_key
         secret_key = creds.secret_key
+        session_token = creds.token
 
-        return [
+        credentials_list = [
             'AWS_ACCESS_KEY_ID=%s' % (str(access_key)),
             'AWS_SECRET_ACCESS_KEY=%s' % (str(secret_key))
+
         ]
+        if session_token:
+            credentials_list.append('AWS_SESSION_TOKEN=%s' % (str(session_token)))
+        return credentials_list
     except Exception as e:
         print('Could not get AWS creds: %s' % e)
 
