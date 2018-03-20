@@ -34,5 +34,5 @@ setup(
     ],
 
     install_requires=['numpy', 'sagemaker-container-support', 'boto3>=1.4.8', 'PyYAML', 'sagemaker', 'pytest', 'mock',
-                      'flask', 'requests', 'chainer', 'chainermn', 'chainercv']
+                      'flask', 'requests', 'chainer']
 )
