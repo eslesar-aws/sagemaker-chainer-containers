@@ -41,49 +41,39 @@ DEFAULT_HOSTING_ENV = [
     'SAGEMAKER_REGION={}'.format(SAGEMAKER_REGION)
 ]
 
-def build_base_image(py_version, framework_name, framework_version, use_gpu=False, cwd='.'):
+def build_base_image(framework_name, framework_version, processor, cwd='.'):
 
-    image_tag = get_base_image_tag(framework_name, framework_version, py_version, use_gpu)
-    _type, version_folder = get_image_info(py_version, use_gpu)
+    image_tag = get_base_image_tag(framework_name, framework_version, processor)
 
-    dockerfile_location = os.path.join('docker', framework_version, 'base', 'Dockerfile.{}'.format(_type))
+    dockerfile_location = os.path.join('docker', framework_version, 'base', 'Dockerfile.{}'.format(processor))
 
     build_directory = os.path.dirname(dockerfile_location)
-    print(build_directory)
 
     subprocess.check_call(['docker', 'build', '-t', image_tag, '-f', dockerfile_location, build_directory], cwd=cwd)
     print('created image {}'.format(image_tag))
     return image_tag
 
 
-def build_image(py_version, framework_name, framework_version, use_gpu=False, cwd='.'):
+def build_image(py_version, framework_name, framework_version, processor, cwd='.'):
     check_call('python setup.py bdist_wheel')
     check_call('python setup.py bdist_wheel', cwd='sagemaker-container-support')
 
-    image_tag = get_image_tag(framework_name, framework_version, py_version, use_gpu)
+    image_tag = get_image_tag(framework_name, framework_version, py_version, processor)
 
-    _type, version_folder = get_image_info(py_version, use_gpu)
-    dockerfile_location = os.path.join('docker', framework_version, 'final', version_folder, 'Dockerfile.{}'.format(_type))
+    dockerfile_location = os.path.join('docker', framework_version, 'final', py_version,
+                                       'Dockerfile.{}'.format(processor))
 
     subprocess.check_call(['docker', 'build', '-t', image_tag, '-f', dockerfile_location, '.'], cwd=cwd)
     print('created image {}'.format(image_tag))
     return image_tag
 
 
-def get_image_info(py_version, use_gpu):
-    _type = 'gpu' if use_gpu else 'cpu'
-    version_folder = 'py2' if py_version == 2 else 'py3'
-    return _type, version_folder
+def get_base_image_tag(framework_name, framework_version, processor):
+    return '{}-base:{}-{}'.format(framework_name, framework_version, processor)
 
 
-def get_base_image_tag(framework_name, framework_version, py_version, use_gpu=False):
-    _type, version_folder = get_image_info(py_version, use_gpu)
-    return '{}-base:{}-{}-{}'.format(framework_name, framework_version, _type, version_folder)
-
-
-def get_image_tag(framework_name, framework_version, py_version, use_gpu=False):
-    _type, version_folder = get_image_info(py_version, use_gpu)
-    return 'sagemaker-{}:{}-{}'.format(framework_name, framework_version, _type, version_folder)
+def get_image_tag(framework_name, framework_version, py_version, processor):
+    return '{}:{}-{}-{}'.format(framework_name, framework_version, processor, py_version)
 
 
 def create_config_files(program, s3_source_archive, path, additional_hp={}):

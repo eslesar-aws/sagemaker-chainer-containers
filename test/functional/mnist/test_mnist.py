@@ -23,12 +23,12 @@ request_data = np.hstack(request_data).reshape((num_records, 784)).astype(np.flo
 labels = np.hstack(labels).astype(np.int64)
 
 
-def test_chainer_mnist_single_machine(python2_cpu_img, opt_ml):
+def test_chainer_mnist_single_machine(docker_image, opt_ml):
     data_dir = join(dir_path, 'data')
     customer_script = 'single_machine_customer_script.py'
     hyperparameters = {'batch_size': 10000, 'epochs': 1, 'unit':10}
 
-    local_mode.train(customer_script, data_dir, python2_cpu_img, opt_ml,
+    local_mode.train(customer_script, data_dir, docker_image, opt_ml,
                      hyperparameters=hyperparameters, source_dir=dir_path)
 
     files = ['model/model.npz', 'output/success', 'output/data/accuracy.png',
@@ -37,12 +37,12 @@ def test_chainer_mnist_single_machine(python2_cpu_img, opt_ml):
     assert not local_mode.file_exists(opt_ml, 'output/failure'), 'Failure happened'
 
 
-def test_chainer_mnist_custom_loop(python2_cpu_img, opt_ml):
+def test_chainer_mnist_custom_loop(docker_image, opt_ml):
     data_dir = join(dir_path, 'data')
     customer_script = 'single_machine_custom_loop.py'
     hyperparameters = {'batch_size': 10000, 'epochs': 1, 'unit': 10}
 
-    local_mode.train(customer_script, data_dir, python2_cpu_img, opt_ml, hyperparameters=hyperparameters,
+    local_mode.train(customer_script, data_dir, docker_image, opt_ml, hyperparameters=hyperparameters,
                      source_dir=dir_path)
 
     files = ['model/model.npz', 'output/success']
@@ -50,12 +50,12 @@ def test_chainer_mnist_custom_loop(python2_cpu_img, opt_ml):
     assert not local_mode.file_exists(opt_ml, 'output/failure'), 'Failure happened'
 
 
-def test_chainer_mnist_distributed(python2_cpu_img, opt_ml):
+def test_chainer_mnist_distributed(docker_image, opt_ml):
     data_dir = join(dir_path, 'data')
     customer_script = 'distributed_customer_script.py'
     hyperparameters = {'batch_size': 10000, 'epochs': 1, 'unit': 10}
 
-    local_mode.train(customer_script, data_dir, python2_cpu_img, opt_ml, hyperparameters=hyperparameters,
+    local_mode.train(customer_script, data_dir, docker_image, opt_ml, hyperparameters=hyperparameters,
                      cluster_size=2, source_dir=dir_path)
 
     files = ['model/model.npz', 'output/success', 'output/data/algo-1/accuracy.png',
@@ -65,11 +65,11 @@ def test_chainer_mnist_distributed(python2_cpu_img, opt_ml):
     assert not local_mode.file_exists(opt_ml, 'output/failure'), 'Failure happened'
 
 
-def test_serving(python2_cpu_img, opt_ml):
+def test_serving(docker_image, opt_ml):
     model_dir = join(dir_path, 'model')
     customer_script = join(dir_path, 'single_machine_customer_script.py')
 
-    with local_mode.serve(customer_script, model_dir=model_dir, image_name=python2_cpu_img, opt_ml=opt_ml):
+    with local_mode.serve(customer_script, model_dir=model_dir, image_name=docker_image, opt_ml=opt_ml):
         # TODO: poll or wait, don't sleep.
         time.sleep(10)
 
