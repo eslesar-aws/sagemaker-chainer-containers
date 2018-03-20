@@ -6,7 +6,7 @@ FROM nvidia/cuda:9.0-cudnn7-devel
 # https://gitlab.com/nvidia/cuda/commit/e0edb5359ecb7bd3d86f0c9bfa18c2260b741ebb
 # install python and nginx
 RUN apt-get update && \
-     apt-get -y install build-essential python-dev git wget curl nginx python-matplotlib
+     apt-get -y install build-essential python-dev git wget curl nginx openssh-server
 
 # install pip
 RUN cd /tmp && \
@@ -24,10 +24,6 @@ RUN cd /tmp && \
 ENV LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
 
 ENV PATH /usr/local/openmpi/bin/:$PATH
-
-
-
-
 
 # install telegraf, used for metrics and benchmark
 RUN cd /tmp && \

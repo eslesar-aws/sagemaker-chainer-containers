@@ -11,7 +11,7 @@ def read(fname):
 
 
 setup(
-    name='sagemaker_generic_container',
+    name='sagemaker_chainer_container',
     version='1.0',
     description='Open source library template for creating containers to run on Amazon SageMaker.',
 
