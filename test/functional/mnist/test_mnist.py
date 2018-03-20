@@ -67,7 +67,7 @@ def test_chainer_mnist_distributed(python2_cpu_img, opt_ml):
 
 def test_serving(python2_cpu_img, opt_ml):
     model_dir = join(dir_path, 'model')
-    customer_script = join(dir_path, 'mnist', 'single_machine_customer_script.py')
+    customer_script = join(dir_path, 'single_machine_customer_script.py')
 
     with local_mode.serve(customer_script, model_dir=model_dir, image_name=python2_cpu_img, opt_ml=opt_ml):
         # TODO: poll or wait, don't sleep.
