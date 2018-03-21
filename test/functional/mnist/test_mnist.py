@@ -65,7 +65,7 @@ def test_chainer_mnist_distributed(docker_image, opt_ml):
     assert not local_mode.file_exists(opt_ml, 'output/failure'), 'Failure happened'
 
 
-def test_serving(docker_image, opt_ml):
+def test_serving(docker_image, opt_ml, py_version):
     model_dir = join(dir_path, 'model')
     customer_script = join(dir_path, 'single_machine_customer_script.py')
 
@@ -76,7 +76,8 @@ def test_serving(docker_image, opt_ml):
         data_as_list = request_data.tolist()
         _predict_and_compare_labels(data_as_list, 'application/json')
         _predict_and_compare_labels(data_as_list, 'text/csv')
-        _predict_and_compare_labels(data_as_list, 'application/pickle')
+        if py_version == 2: # model was pickled in python 2. TODO: change serialization format or add another model.
+            _predict_and_compare_labels(data_as_list, 'application/pickle')
 
 
 def _predict_and_compare_labels(data, content_type):

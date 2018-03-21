@@ -25,7 +25,7 @@ def pytest_addoption(parser):
     parser.addoption('--build-image', '-D', action="store_true")
     parser.addoption('--build-base-image', '-B', action="store_true")
     parser.addoption('--install-container-support', '-C', action="store_true")
-    parser.addoption('--docker-base-name', default='preprod-chainer')
+    parser.addoption('--docker-base-name', default='chainer')
     parser.addoption('--region', default='us-west-2')
     parser.addoption('--framework-version', default='3.4.0')
     parser.addoption('--py-version', choices=['2', '3'], default='2')
@@ -60,9 +60,9 @@ def processor(request):
 
 
 @pytest.fixture(scope='session')
-def base_image_tag(request, framework_version, processor):
+def base_image_tag(request, framework_version, processor, py_version):
     provided_tag = request.config.getoption('--tag')
-    default_tag = '{}-{}'.format(framework_version, processor)
+    default_tag = '{}-{}-{}'.format(framework_version, processor, py_version)
     return provided_tag if provided_tag is not None else default_tag
 
 
@@ -99,10 +99,10 @@ def install_container_support(request):
 
 
 @pytest.fixture(scope='session', autouse=True)
-def build_base_image(request, framework_version, processor, base_image_tag):
+def build_base_image(request, framework_version, processor, base_image_tag, docker_base_name):
     build_base_image = request.config.getoption('--build-base-image')
     if build_base_image:
-        return local_mode.build_base_image(framework_name=FRAMEWORK_NAME,
+        return local_mode.build_base_image(framework_name=docker_base_name,
                                            framework_version=framework_version,
                                            base_image_tag=base_image_tag,
                                            processor=processor,
@@ -112,10 +112,10 @@ def build_base_image(request, framework_version, processor, base_image_tag):
 
 
 @pytest.fixture(scope='session', autouse=True)
-def build_image(request, py_version, framework_version, processor, tag):
+def build_image(request, py_version, framework_version, processor, tag, docker_base_name):
     build_image = request.config.getoption('--build-image')
     if build_image:
-        return local_mode.build_image(framework_name=FRAMEWORK_NAME,
+        return local_mode.build_image(framework_name=docker_base_name,
                                       py_version=py_version,
                                       framework_version=framework_version,
                                       processor=processor,

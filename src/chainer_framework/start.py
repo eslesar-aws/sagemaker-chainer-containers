@@ -1,6 +1,6 @@
 from container_support import ContainerSupport
-import training
-import serving
+from chainer_framework import training
+from chainer_framework import serving
 
 cs = ContainerSupport()
 cs.register_engine(training.engine)
