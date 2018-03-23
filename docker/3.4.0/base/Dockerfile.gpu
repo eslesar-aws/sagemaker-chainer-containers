@@ -20,7 +20,8 @@ RUN cd /tmp && \
         wget "https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.2.tar.gz" && \
         tar xzf openmpi-2.1.2.tar.gz && \
         cd openmpi-2.1.2  && \
-        ./configure --prefix=/usr/local/openmpi --with-cuda  && make all && make -j"$(nproc)" install && ldconfig
+        ./configure --with-cuda  && make all && make -j"$(nproc)" install && ldconfig
+        #./configure --prefix=/usr/local/openmpi --with-cuda  && make all && make -j"$(nproc)" install && ldconfig
 
 ENV LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
 

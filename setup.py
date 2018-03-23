@@ -14,7 +14,6 @@ setup(
     name='sagemaker_chainer_container',
     version='1.0',
     description='Open source library template for creating containers to run on Amazon SageMaker.',
-
     packages=find_packages(where='src', exclude=('test',)),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],

@@ -54,7 +54,22 @@ def _preprocess_mnist(raw, withlabel, ndim, scale, image_dtype, label_dtype,
         return images
 
 
-def train(channel_input_dirs, hyperparameters, num_gpus, output_data_dir):
+def train(channel_input_dirs, hyperparameters, num_gpus, output_data_dir, current_host):
+    print('hyperparameters')
+    print(current_host + str(hyperparameters))
+    print('num gpus: ' + current_host + str(num_gpus))
+
+    '''
+    import subprocess
+    which = subprocess.check_output(['which', 'nvidia-smi'])
+    print('which ' + current_host + which)
+    output = subprocess.check_output(["printenv"]).decode('utf-8')
+    print('printenv ' + current_host + output)
+    output = subprocess.check_output(["nvidia-smi", "--list-gpus"]).decode('utf-8')
+    gpus = sum([1 for x in output.split('\n') if x.startswith('GPU ')])
+    print('gpus: ' + current_host + str(gpus))
+    '''
+
     batch_size = hyperparameters.get('batch_size', 100)
     epochs = hyperparameters.get('epochs', 20)
     frequency = hyperparameters.get('frequency', epochs)
@@ -62,6 +77,8 @@ def train(channel_input_dirs, hyperparameters, num_gpus, output_data_dir):
     communicator = hyperparameters.get('communicator', 'naive' if num_gpus == 0 else 'hierarchical')
 
     comm = chainermn.create_communicator(communicator)
+
+    #FIXME: this means: one GPU per MPI process?
     device = comm.intra_rank if num_gpus > 0 else -1
 
     if comm.mpi_comm.rank == 0:

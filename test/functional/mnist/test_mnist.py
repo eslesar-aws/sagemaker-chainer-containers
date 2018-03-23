@@ -53,7 +53,7 @@ def test_chainer_mnist_custom_loop(docker_image, opt_ml, use_gpu):
 def test_chainer_mnist_distributed(docker_image, opt_ml, use_gpu):
     data_dir = join(dir_path, 'data')
     customer_script = 'distributed_customer_script.py'
-    hyperparameters = {'batch_size': 10000, 'epochs': 1, 'unit': 10}
+    hyperparameters = {'batch_size': 200, 'epochs': 1000, 'unit': 10}
 
     local_mode.train(customer_script, data_dir, docker_image, opt_ml, hyperparameters=hyperparameters,
                      cluster_size=2, source_dir=dir_path, use_gpu=use_gpu)

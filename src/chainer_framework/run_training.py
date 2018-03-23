@@ -4,10 +4,13 @@ import os
 
 from container_support.environment import TrainingEnvironment
 
-def train(user_module, env):
+def train():
     '''
     Runs the user's training script.
     '''
+    env = TrainingEnvironment()
+    print('kwargs for training:' + str(env.kwargs_for_training))
+    user_module = env.import_user_module()
     training_parameters = env.matching_parameters(user_module.train)
     model = user_module.train(**training_parameters)
 
@@ -18,6 +21,4 @@ def train(user_module, env):
             serializers.save_npz(os.path.join(env.model_dir, 'model.npz'), model)
 
 if __name__=="__main__":
-    env = TrainingEnvironment()
-    user_module = env.import_user_module()
-    train(user_module, env)
+    train()

@@ -98,12 +98,16 @@ class ContainerEnvironment(object):
     @staticmethod
     def _get_available_gpus():
         gpus = 0
+        print('getting available gpus')
         try:
-            output = subprocess.check_output(["nvidia-smi", "--list-gpus"]).decode('utf-8')
+            print('running gpu subprocess')
+            logger.info('running gpu subprocess')
+            output = subprocess.check_output(["/usr/bin/nvidia-smi", "--list-gpus"]).decode('utf-8')
+            print(output)
             gpus = sum([1 for x in output.split('\n') if x.startswith('GPU ')])
         except Exception as e:
-            logger.debug("exception listing gpus (normal if no nvidia gpus installed): %s" % str(e))
-
+            print("exception listing gpus (normal if no nvidia gpus installed): %s" % str(e))
+        print ('got gpus: ' + str(gpus))
         return gpus
 
     @staticmethod

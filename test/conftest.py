@@ -95,13 +95,13 @@ def opt_ml():
 def use_gpu(processor):
     return processor == 'gpu'
 
-
+'''
 @pytest.fixture(scope='session', autouse=True)
 def install_container_support(request):
     install = request.config.getoption('--install-container-support')
-    if not install:
+    if install:
         local_mode.install_container_support()
-
+'''
 
 @pytest.fixture(scope='session', autouse=True)
 def build_base_image(request, framework_version, processor, base_image_tag, docker_base_name):
