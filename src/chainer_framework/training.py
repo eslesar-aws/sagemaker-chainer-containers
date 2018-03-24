@@ -17,7 +17,7 @@ def train(user_module, training_environment):
     """
 
     if len(training_environment.hosts) == 1:
-        run_training.train(user_module, training_environment)
+        run_training.train()
     else:
         if _is_master_node(training_environment.current_host):
             _wait_for_nodes_to_start_sshd([host for host in training_environment.hosts
@@ -36,9 +36,16 @@ def train(user_module, training_environment):
 
             # TODO: choose number of processes (for gpu and cpu)?
             # TODO: stdout from all nodes is sent to algo-1 -- instead, capture stdout on worker nodes.
+            # TODO: fix this up. this is a mess.
+            num_gpus = training_environment.available_gpus
+            num_hosts = len(training_environment.hosts)
+            num_processes = num_gpus * num_hosts if num_gpus > 0 else num_hosts
             mpi_command = 'mpirun --allow-run-as-root --host ' + ','.join(training_environment.hosts) + ' ' \
                           + " {} ".format(mpi_mca_options) \
+                          + " -x LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/openmpi/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64 " \
+                          + " -np {} ".format(num_processes) \
                           + mpi_script_name
+
             logger.info("mpi_command: " + mpi_command)
 
             # TODO: sys.exit(1) on called process failure -- fails quickly?

@@ -62,3 +62,5 @@ RUN mkdir -p /root/.openmpi
 # the master node) is still running. Processes on worker nodes use /mpi_is_running file to determine when to exit.
 COPY mpi_script.sh /mpi_script.sh
 RUN chmod +x /mpi_script.sh
+
+ENV PATH=/usr/local/nvidia/bin:$PATH

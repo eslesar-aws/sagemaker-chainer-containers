@@ -102,7 +102,7 @@ class ContainerEnvironment(object):
         try:
             print('running gpu subprocess')
             logger.info('running gpu subprocess')
-            output = subprocess.check_output(["/usr/bin/nvidia-smi", "--list-gpus"]).decode('utf-8')
+            output = subprocess.check_output(["nvidia-smi", "--list-gpus"]).decode('utf-8')
             print(output)
             gpus = sum([1 for x in output.split('\n') if x.startswith('GPU ')])
         except Exception as e:
