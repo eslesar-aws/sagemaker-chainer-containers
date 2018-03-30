@@ -234,7 +234,7 @@ class TrainingEngine(object):
             trc = traceback.format_exc()
             message = 'uncaught exception during training: {}\n{}\n'.format(e, trc)
             training_environment.write_failure_file(message, training_environment.base_dir)
-            exit_code = 1 if not(e, 'errno') else e.errno
+            exit_code = e.errno if (e, 'errno') else 1
             raise e
         finally:
             os._exit(exit_code)

@@ -20,7 +20,8 @@ RUN cd /tmp && \
         wget "https://www.open-mpi.org/software/ompi/v2.1/downloads/openmpi-2.1.2.tar.gz" && \
         tar xzf openmpi-2.1.2.tar.gz && \
         cd openmpi-2.1.2  && \
-        ./configure --prefix=/usr/local/openmpi --with-cuda  && make all && make -j"$(nproc)" install && ldconfig
+        ./configure --with-cuda  && make all && make -j"$(nproc)" install && ldconfig
+        #./configure --prefix=/usr/local/openmpi --with-cuda  && make all && make -j"$(nproc)" install && ldconfig
 
 ENV LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
 
@@ -51,13 +52,8 @@ RUN printf "Host *\n  StrictHostKeyChecking no\n" >> /root/.ssh/config
 # MPI Configuration.
 RUN mkdir -p /root/.openmpi
 
-# If any training process fails, fail entire job. https://www.open-mpi.org/doc/v3.0/man1/mpirun.1.php#toc23
-# TODO: This doesn't actually work as expected. MPI job keeps running even if user module raises an exception.
-# RUN echo "orte_abort_on_non_zero_status=1\n" >> /root/.openmpi/mca-params.conf
+ENV PATH=/usr/local/nvidia/bin:$PATH
 
-# Add /mpi_script.sh
-# For distributed training: the 'master node' runs mpirun with this script, '/mpi_script.sh'
-# This script creates a file '/mpi_is_running' that worker nodes use to determine whether training (started by MPI from
-# the master node) is still running. Processes on worker nodes use /mpi_is_running file to determine when to exit.
-COPY mpi_script.sh /mpi_script.sh
-RUN chmod +x /mpi_script.sh
+COPY changehostname.c /
+COPY change-hostname.sh /usr/local/bin/change-hostname.sh
+RUN chmod +x /usr/local/bin/change-hostname.sh

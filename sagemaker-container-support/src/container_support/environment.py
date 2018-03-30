@@ -133,15 +133,15 @@ class TrainingEnvironment(ContainerEnvironment):
 
         self.resource_config = self._load_config(os.path.join(
             self.input_config_dir, TrainingEnvironment.RESOURCE_CONFIG_FILE))
-        "dict of resource configuration settings."
+        "The dict of resource configuration settings."
 
         self.hyperparameters = self._load_hyperparameters(
             os.path.join(self.input_config_dir, TrainingEnvironment.HYPERPARAMETERS_FILE))
-        "dict of hyperparameters that were passed to the CreateTrainingJob API."
+        "The dict of hyperparameters that were passed to the CreateTrainingJob API."
 
         # TODO: change default.
         self.network_interface_name = self.resource_config.get('network_interface_name', 'ethwe')
-        "the name of the network interface to use for distributed training."
+        "The name of the network interface to use for distributed training."
 
         self.current_host = self.resource_config.get('current_host', '')
         "The hostname of the current container."
@@ -158,7 +158,7 @@ class TrainingEnvironment(ContainerEnvironment):
         # TODO validate docstring
         self.channels = self._load_config(
             os.path.join(self.input_config_dir, TrainingEnvironment.INPUT_DATA_CONFIG_FILE))
-        "dict of training input data channel name to directory with the input files for that channel."
+        "The dict of training input data channel name to directory with the input files for that channel."
 
         # TODO validate docstring
         self.channel_dirs = {channel: self._get_channel_dir(channel) for channel in self.channels}

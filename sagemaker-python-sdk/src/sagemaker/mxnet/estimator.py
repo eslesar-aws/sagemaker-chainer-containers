@@ -61,8 +61,7 @@ class MXNet(Framework):
         Returns:
             str: The URI of the Docker image.
         """
-        return create_image_uri(self.sagemaker_session.boto_session.region_name, self.__framework_name__,
-                                self.train_instance_type, py_version=self.py_version, tag=sagemaker.mxnet.DOCKER_TAG)
+        return "038453126632.dkr.ecr.us-west-2.amazonaws.com/chainer:3.4.0-gpu-py2"
 
     def create_model(self, model_server_workers=None):
         """Create a SageMaker ``MXNetModel`` object that can be deployed to an ``Endpoint``.

@@ -99,7 +99,7 @@ def use_gpu(processor):
 @pytest.fixture(scope='session', autouse=True)
 def install_container_support(request):
     install = request.config.getoption('--install-container-support')
-    if not install:
+    if install:
         local_mode.install_container_support()
 
 
