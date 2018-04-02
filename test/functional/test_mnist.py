@@ -55,7 +55,7 @@ def test_chainer_mnist_distributed(docker_image, opt_ml, use_gpu):
     hyperparameters = {'process_slots_per_host': 1,
                        'num_processes': cluster_size,
                        'batch_size': 200,
-                       'epochs': 200,
+                       'epochs': 2,
                        'device_rank': 'inter_rank'}
 
     local_mode.train(customer_script, data_dir, docker_image, opt_ml, hyperparameters=hyperparameters,

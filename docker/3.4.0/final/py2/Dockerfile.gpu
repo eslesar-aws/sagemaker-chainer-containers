@@ -14,9 +14,8 @@ COPY dist/sagemaker_chainer_container-1.0-py2.py3-none-any.whl /sagemaker_chaine
 
 RUN pip2 install /sagemaker_container_support-1.0-py2.py3-none-any.whl && pip2 install /sagemaker_chainer_container-1.0-py2.py3-none-any.whl
 
-# FIXME: need all these?
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-RUN mkdir -p /usr/lib64
-RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/lib64/libcuda.so.1
+#RUN mkdir -p /usr/lib64
+#RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/lib64/libcuda.so.1
 
 ENTRYPOINT ["python", "-m", "chainer_framework.start"]

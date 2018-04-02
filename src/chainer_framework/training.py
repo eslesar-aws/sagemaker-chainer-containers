@@ -1,4 +1,9 @@
-import sys, os, time, subprocess, socket, logging, threading
+import os
+import time
+import subprocess
+import socket
+import logging
+import threading
 
 from chainer_framework import run_training
 
@@ -66,7 +71,9 @@ def _get_mpi_command(training_environment):
 
     num_hosts = len(training_environment.hosts)
     num_processes = hyperparameters.get('num_processes', process_slots_per_host * num_hosts)
-    mpi_command = 'mpirun --allow-run-as-root --host {}'.format(",".join(training_environment.hosts)) \
+    host_list = training_environment.hosts if process_slots_per_host == 1 else \
+        [host + ':{}'.format(process_slots_per_host) for host in training_environment.hosts]
+    mpi_command = 'mpirun --allow-run-as-root --host {}'.format(",".join(host_list)) \
                   + " -mca btl_tcp_if_include {0}".format(training_environment.network_interface_name) \
                   + " -mca oob_tcp_if_include {0}".format(training_environment.network_interface_name) \
                   + " -mca btl ^openib" \
@@ -82,15 +89,14 @@ def _get_mpi_command(training_environment):
 
 
 def _start_ssh_daemon():
-    subprocess.Popen(["/usr/sbin/sshd", "-D"])
+    subprocess.check_call(["/usr/sbin/sshd", "-D"])
 
 
 def _wait_for_training_to_finish(training_environment):
 
     current_host = training_environment.current_host
 
-    logger.debug("worker node {} is waiting for MPI to start training process "
-                .format(current_host))
+    logger.debug("worker node {} is waiting for MPI to start training process ".format(current_host))
 
     master_host = _get_master_host_name(training_environment.hosts)
 

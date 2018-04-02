@@ -1,11 +1,11 @@
 import logging
 import os
 import platform
-from os.path import join
-
-import pytest
 import shutil
 import tempfile
+
+import pytest
+
 
 from test.utils import local_mode
 
@@ -16,7 +16,6 @@ logging.getLogger('factory.py').setLevel(logging.INFO)
 logging.getLogger('auth.py').setLevel(logging.INFO)
 logging.getLogger('connectionpool.py').setLevel(logging.INFO)
 
-SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 FRAMEWORK_NAME='chainer'
@@ -111,7 +110,7 @@ def build_base_image(request, framework_version, processor, base_image_tag, dock
                                            framework_version=framework_version,
                                            base_image_tag=base_image_tag,
                                            processor=processor,
-                                           cwd=join(dir_path, '..'))
+                                           cwd=os.path.join(dir_path, '..'))
 
     return base_image_tag
 
@@ -125,6 +124,6 @@ def build_image(request, py_version, framework_version, processor, tag, docker_b
                                       framework_version=framework_version,
                                       processor=processor,
                                       tag=tag,
-                                      cwd=join(dir_path, '..'))
+                                      cwd=os.path.join(dir_path, '..'))
 
     return tag

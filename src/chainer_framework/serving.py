@@ -3,10 +3,8 @@ import pickle
 import numpy as np
 from six import StringIO
 
-from chainer_framework import PICKLE_CONTENT_TYPE
-
 from container_support.app import ServingEngine
-from container_support.serving import JSON_CONTENT_TYPE, CSV_CONTENT_TYPE, \
+from container_support.serving import PICKLE_CONTENT_TYPE, JSON_CONTENT_TYPE, CSV_CONTENT_TYPE, \
     UnsupportedContentTypeError, UnsupportedAcceptTypeError
 
 engine = ServingEngine()

@@ -1,12 +1,8 @@
 FROM nvidia/cuda:9.0-cudnn7-devel
-# this is MXNet base image, try to keep it
 
-# https://gitlab.com/nvidia/cuda/blob/ubuntu16.04/9.0/devel/Dockerfile
-# Why devel, not runtime? (NCCL 2)
-# https://gitlab.com/nvidia/cuda/commit/e0edb5359ecb7bd3d86f0c9bfa18c2260b741ebb
-# install python and nginx
 RUN apt-get update && \
-     apt-get -y install build-essential python-dev git wget curl nginx openssh-server
+    apt-get -y install build-essential python-dev python3-dev git wget curl nginx openssh-server && \
+    apt-get clean
 
 # install pip
 RUN cd /tmp && \
@@ -21,11 +17,13 @@ RUN cd /tmp && \
         tar xzf openmpi-2.1.2.tar.gz && \
         cd openmpi-2.1.2  && \
         ./configure --with-cuda  && make all && make -j"$(nproc)" install && ldconfig
-        #./configure --prefix=/usr/local/openmpi --with-cuda  && make all && make -j"$(nproc)" install && ldconfig
+
+RUN ldconfig
 
 ENV LD_LIBRARY_PATH=/usr/local/openmpi/lib:$LD_LIBRARY_PATH
 
 ENV PATH /usr/local/openmpi/bin/:$PATH
+ENV PATH=/usr/local/nvidia/bin:$PATH
 
 # install telegraf, used for metrics and benchmark
 RUN cd /tmp && \
@@ -33,27 +31,18 @@ RUN cd /tmp && \
     dpkg -i telegraf_1.4.2-1_amd64.deb && \
     rm telegraf_1.4.2-1_amd64.deb
 
-
-ENV PYTHONDONTWRITEBYTECODE=1 \
-     PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 
 # SSH. Partially taken from https://docs.docker.com/engine/examples/running_ssh_service/
-RUN mkdir /var/run/sshd
-# SSH login fix. Otherwise user is kicked off after login
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-
-# Create SSH key.
-# TODO: don't run as root.
-RUN mkdir -p /root/.ssh/
-RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
-RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
-RUN printf "Host *\n  StrictHostKeyChecking no\n" >> /root/.ssh/config
-
-# MPI Configuration.
-RUN mkdir -p /root/.openmpi
-
-ENV PATH=/usr/local/nvidia/bin:$PATH
+RUN mkdir /var/run/sshd && \
+  sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+  mkdir -p /root/.ssh/ && \
+  ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa && \
+  cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys && \
+  printf "Host *\n  StrictHostKeyChecking no\n" >> /root/.ssh/config
 
 COPY changehostname.c /
 COPY change-hostname.sh /usr/local/bin/change-hostname.sh
-RUN chmod +x /usr/local/bin/change-hostname.sh
+
+RUN mkdir -p /root/.openmpi && \
+  chmod +x /usr/local/bin/change-hostname.sh

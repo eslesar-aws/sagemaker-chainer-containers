@@ -3,17 +3,14 @@ from __future__ import print_function
 import os
 
 import numpy as np
-
 import chainer
 import chainer.functions as F
 import chainer.links as L
-from chainer import training
-from chainer.training import extensions
-from chainer import serializers
-from chainer.datasets import tuple_dataset
-
-from mpi4py import MPI
 import chainermn
+from chainer import serializers, training
+from chainer.training import extensions
+from chainer.datasets import tuple_dataset
+from mpi4py import MPI
 
 
 class MLP(chainer.Chain):
@@ -32,16 +29,14 @@ class MLP(chainer.Chain):
         return self.l3(h2)
 
 
-def _preprocess_mnist(raw, withlabel, ndim, scale, image_dtype, label_dtype,
-                     rgb_format):
+def _preprocess_mnist(raw, withlabel, ndim, scale, image_dtype, label_dtype, rgb_format):
     images = raw['x']
     if ndim == 2:
         images = images.reshape(-1, 28, 28)
     elif ndim == 3:
         images = images.reshape(-1, 1, 28, 28)
         if rgb_format:
-            images = np.broadcast_to(images,
-                                        (len(images), 3) + images.shape[2:])
+            images = np.broadcast_to(images, (len(images), 3) + images.shape[2:])
     elif ndim != 1:
         raise ValueError('invalid ndim for MNIST dataset')
     images = images.astype(image_dtype)
@@ -64,18 +59,12 @@ def train(channel_input_dirs, hyperparameters, num_gpus, output_data_dir, curren
 
     comm = chainermn.create_communicator(communicator)
 
-    # For using GPUs with local mode
     if device_rank == 'inter_rank':
         device = comm.inter_rank if num_gpus > 0 else -1
     else:
         device = comm.intra_rank if num_gpus > 0 else -1
 
     print('==========================================')
-    print('{} intra rank: {}'.format(current_host, comm.intra_rank))
-    print('{} intra size: {}'.format(current_host, comm.intra_size))
-    print('{} inter rank: {}'.format(current_host, comm.inter_rank))
-    print('{} inter size: {}'.format(current_host, comm.inter_size))
-    print('{} comm rank: {}'.format(current_host, comm.rank))
     print('Num process (COMM_WORLD): {}'.format(MPI.COMM_WORLD.Get_size()))
     print('Using {} communicator'.format(comm))
     print('Num unit: {}'.format(units))
@@ -96,11 +85,11 @@ def train(channel_input_dirs, hyperparameters, num_gpus, output_data_dir, curren
     test_file = np.load(os.path.join(channel_input_dirs['training'], 'test.npz'))
 
     preprocess_mnist_options = {'withlabel': True,
-                           'ndim': 1,
-                           'scale': 1.,
-                           'image_dtype': np.float32,
-                           'label_dtype': np.int32,
-                           'rgb_format': False}
+                                'ndim': 1,
+                                'scale': 1.,
+                                'image_dtype': np.float32,
+                                'label_dtype': np.int32,
+                                'rgb_format': False}
 
     train = _preprocess_mnist(train_file, **preprocess_mnist_options)
     test = _preprocess_mnist(test_file, **preprocess_mnist_options)
