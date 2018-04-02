@@ -55,11 +55,12 @@ def train(channel_input_dirs, hyperparameters, num_gpus, output_data_dir, curren
     frequency = hyperparameters.get('frequency', epochs)
     units = hyperparameters.get('unit', 1000)
     communicator = hyperparameters.get('communicator', 'naive' if num_gpus == 0 else 'pure_nccl')
-    device_rank = hyperparameters.get('device_rank', 'intra_rank')
+    rank = hyperparameters.get('rank', 'intra_rank')
 
     comm = chainermn.create_communicator(communicator)
 
-    if device_rank == 'inter_rank':
+    # When running in local mode, setting rank to 'inter_rank' simulates multi-node training.
+    if rank == 'inter_rank':
         device = comm.inter_rank if num_gpus > 0 else -1
     else:
         device = comm.intra_rank if num_gpus > 0 else -1

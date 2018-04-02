@@ -7,10 +7,9 @@ from test.utils import local_mode
 from test.utils.local_mode import request
 
 mnist_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'resources', 'mnist')
-
+data_dir = join(mnist_path, 'data')
 
 def test_chainer_mnist_single_machine(docker_image, opt_ml, use_gpu):
-    data_dir = join(mnist_path, 'data')
     customer_script = 'single_machine_customer_script.py'
     hyperparameters = {'batch_size': 10000, 'epochs': 1}
 
@@ -21,16 +20,15 @@ def test_chainer_mnist_single_machine(docker_image, opt_ml, use_gpu):
                                'output/data/cg.dot', 'output/data/log', 'output/data/loss.png']
     _assert_files_exist(opt_ml, files)
     assert not local_mode.file_exists(opt_ml, 'output/failure'), 'Failure happened'
-    with local_mode.serve(join(mnist_path, customer_script), model_dir=None, image_name=docker_image, opt_ml=opt_ml):
+    with local_mode.serve(join(mnist_path, customer_script), model_dir=None, image_name=docker_image, opt_ml=opt_ml,
+                          use_gpu=use_gpu):
         request_data = np.zeros((100, 784))
         data_as_list = request_data.tolist()
         _predict_and_assert_response_length(data_as_list, 'application/json')
         _predict_and_assert_response_length(data_as_list, 'text/csv')
-        _predict_and_assert_response_length(data_as_list, 'application/pickle')
 
 
 def test_chainer_mnist_custom_loop(docker_image, opt_ml, use_gpu):
-    data_dir = join(mnist_path, 'data')
     customer_script = 'single_machine_custom_loop.py'
     hyperparameters = {'batch_size': 10000, 'epochs': 1}
 
@@ -40,23 +38,22 @@ def test_chainer_mnist_custom_loop(docker_image, opt_ml, use_gpu):
     files = ['model/model.npz', 'output/success']
     _assert_files_exist(opt_ml, files)
     assert not local_mode.file_exists(opt_ml, 'output/failure'), 'Failure happened'
+
     with local_mode.serve(join(mnist_path, customer_script), model_dir=None, image_name=docker_image, opt_ml=opt_ml):
         request_data = np.zeros((100, 784))
         data_as_list = request_data.tolist()
         _predict_and_assert_response_length(data_as_list, 'application/json')
         _predict_and_assert_response_length(data_as_list, 'text/csv')
-        _predict_and_assert_response_length(data_as_list, 'application/pickle')
 
 
 def test_chainer_mnist_distributed(docker_image, opt_ml, use_gpu):
-    data_dir = join(mnist_path, 'data')
     customer_script = 'distributed_customer_script.py'
     cluster_size = 2
     hyperparameters = {'process_slots_per_host': 1,
                        'num_processes': cluster_size,
-                       'batch_size': 200,
-                       'epochs': 2,
-                       'device_rank': 'inter_rank'}
+                       'batch_size': 10000,
+                       'epochs': 1,
+                       'rank': 'inter_rank'}
 
     local_mode.train(customer_script, data_dir, docker_image, opt_ml, hyperparameters=hyperparameters,
                      cluster_size=cluster_size, source_dir=mnist_path, use_gpu=use_gpu)
@@ -72,10 +69,10 @@ def test_chainer_mnist_distributed(docker_image, opt_ml, use_gpu):
         data_as_list = request_data.tolist()
         _predict_and_assert_response_length(data_as_list, 'application/json')
         _predict_and_assert_response_length(data_as_list, 'text/csv')
-        _predict_and_assert_response_length(data_as_list, 'application/pickle')
 
 
 def _predict_and_assert_response_length(data, content_type):
+    # TODO: npz
     predict_response = request(data, request_type=content_type)
     assert len(predict_response) == len(data)
 

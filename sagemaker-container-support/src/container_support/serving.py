@@ -12,7 +12,6 @@ from container_support.retrying import retry
 
 logger = logging.getLogger(__name__)
 
-PICKLE_CONTENT_TYPE = 'application/pickle'
 JSON_CONTENT_TYPE = "application/json"
 CSV_CONTENT_TYPE = "text/csv"
 OCTET_STREAM_CONTENT_TYPE = "application/octet-stream"
