@@ -459,17 +459,6 @@ def create_host_names(cluster_size):
     return ['{}-{}'.format(CONTAINER_PREFIX, i) for i in range(1, cluster_size + 1)]
 
 
-def _read_credentials():
-    creds = {}
-    credential_file = os.path.expanduser('~/.aws/credentials')
-    with open(credential_file) as f:
-        for line in f.readlines():
-            if not line.startswith('['):
-                k, v = line.split('=')
-                creds[k.strip().upper()] = v.strip()
-    return creds
-
-
 def check_call(cmd, *popenargs, **kwargs):
     if isinstance(cmd, str):
         cmd = cmd.split(" ")
