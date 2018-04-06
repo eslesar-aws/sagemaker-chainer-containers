@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import chainermn
 
+
 def train(hyperparameters, num_gpus, hosts):
     if len(hosts) == 1:
         raise Exception('Exception on a single machine')
@@ -19,3 +20,4 @@ def train(hyperparameters, num_gpus, hosts):
 
     if node_to_fail == rank:
         raise Exception('exception from node {}'.format(rank))
+

@@ -6,9 +6,9 @@ from test.utils import local_mode
 
 resource_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'resources', 'failure')
 
+customer_script = 'failure_script.py'
 
 def test_single_machine_failure(docker_image, opt_ml, use_gpu):
-    customer_script = 'single_machine_failure_script.py'
 
     local_mode.train(customer_script, resource_path, docker_image, opt_ml, source_dir=resource_path,
                                  use_gpu=use_gpu)
@@ -18,7 +18,6 @@ def test_single_machine_failure(docker_image, opt_ml, use_gpu):
 
 @pytest.mark.parametrize('node_to_fail', [0, 1])
 def test_distributed_failure(docker_image, opt_ml, use_gpu, node_to_fail):
-    customer_script = 'distributed_failure_script.py'
     cluster_size = 2
     hyperparameters = {'rank': 'inter_rank',
                        'process_slots_per_host': 1,
