@@ -27,9 +27,8 @@ def pytest_addoption(parser):
     parser.addoption('--build-image', '-D', action="store_true")
     parser.addoption('--build-base-image', '-B', action="store_true")
     parser.addoption('--install-container-support', '-C', action="store_true")
-
-    parser.addoption('--aws-id', required=True)
-    parser.addoption('--instance-type', required=True)
+    parser.addoption('--aws-id')
+    parser.addoption('--instance-type')
     parser.addoption('--docker-base-name', default='chainer')
     parser.addoption('--region', default='us-west-2')
     parser.addoption('--framework-version', default='3.4.0')
