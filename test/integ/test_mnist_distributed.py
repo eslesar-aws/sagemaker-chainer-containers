@@ -40,7 +40,8 @@ def test_chainer_distributed(sagemaker_session, ecr_image, instance_type):
         chainer = ChainerTestEstimator(entry_point=script_path, role='SageMakerRole',
                                 train_instance_count=2, train_instance_type=instance_type,
                                 sagemaker_session=sagemaker_session,
-                                docker_image_uri=ecr_image)
+                                docker_image_uri=ecr_image,
+                                hyperparameters={'epochs': 1})
 
         prefix = 'chainer_mnist/{}'.format(sagemaker_timestamp())
         train_input = chainer.sagemaker_session.upload_data(path=os.path.join(data_path, 'train'),
